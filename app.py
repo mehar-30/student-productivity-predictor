@@ -2,77 +2,96 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-# Load trained model
+# Load model
 model = joblib.load("student_productivity_model.pkl")
 
+# Page settings
+st.set_page_config(
+    page_title="Student Productivity Predictor",
+    page_icon="🎓",
+    layout="wide"
+)
+
 st.title("🎓 Student Productivity Predictor")
+st.write("Enter the student's details to predict their productivity score.")
 
-st.write("Enter the student's details to predict the productivity score.")
+st.divider()
 
-age = st.number_input("Age", 15, 50, 20)
+# Input columns
+col1, col2 = st.columns(2)
 
-gender = st.selectbox(
-    "Gender",
-    ["Male", "Female"]
-)
+with col1:
+    st.subheader("📚 Academic Details")
 
-study_hours = st.number_input(
-    "Study Hours Per Day", 0.0, 24.0, 5.0
-)
+    age = st.number_input("Age", 15, 50, 20)
 
-sleep_hours = st.number_input(
-    "Sleep Hours", 0.0, 24.0, 7.0
-)
+    gender = st.selectbox(
+        "Gender",
+        ["Male", "Female"]
+    )
 
-phone_usage = st.number_input(
-    "Phone Usage Hours", 0.0, 24.0, 2.0
-)
+    study_hours = st.number_input(
+        "Study Hours Per Day", 0.0, 24.0, 5.0
+    )
 
-social_media = st.number_input(
-    "Social Media Hours", 0.0, 24.0, 2.0
-)
+    assignments = st.number_input(
+        "Assignments Completed", 0, 100, 5
+    )
 
-youtube = st.number_input(
-    "YouTube Hours", 0.0, 24.0, 1.0
-)
+    attendance = st.number_input(
+        "Attendance Percentage", 0.0, 100.0, 75.0
+    )
 
-gaming = st.number_input(
-    "Gaming Hours", 0.0, 24.0, 1.0
-)
+    final_grade = st.number_input(
+        "Final Grade", 0.0, 100.0, 70.0
+    )
 
-breaks = st.number_input(
-    "Breaks Per Day", 0, 20, 3
-)
+    focus = st.number_input(
+        "Focus Score", 0.0, 10.0, 5.0
+    )
 
-coffee = st.number_input(
-    "Coffee Intake (mg)", 0, 1000, 100
-)
+with col2:
+    st.subheader("🧘 Lifestyle Details")
 
-exercise = st.number_input(
-    "Exercise Minutes", 0, 300, 30
-)
+    sleep_hours = st.number_input(
+        "Sleep Hours", 0.0, 24.0, 7.0
+    )
 
-assignments = st.number_input(
-    "Assignments Completed", 0, 100, 5
-)
+    phone_usage = st.number_input(
+        "Phone Usage Hours", 0.0, 24.0, 2.0
+    )
 
-attendance = st.number_input(
-    "Attendance Percentage", 0.0, 100.0, 75.0
-)
+    social_media = st.number_input(
+        "Social Media Hours", 0.0, 24.0, 2.0
+    )
 
-stress = st.number_input(
-    "Stress Level", 0.0, 10.0, 5.0
-)
+    youtube = st.number_input(
+        "YouTube Hours", 0.0, 24.0, 1.0
+    )
 
-focus = st.number_input(
-    "Focus Score", 0.0, 10.0, 5.0
-)
+    gaming = st.number_input(
+        "Gaming Hours", 0.0, 24.0, 1.0
+    )
 
-final_grade = st.number_input(
-    "Final Grade", 0.0, 100.0, 70.0
-)
+    breaks = st.number_input(
+        "Breaks Per Day", 0, 20, 3
+    )
 
-if st.button("Predict Productivity"):
+    coffee = st.number_input(
+        "Coffee Intake (mg)", 0, 1000, 100
+    )
+
+    exercise = st.number_input(
+        "Exercise Minutes", 0, 300, 30
+    )
+
+    stress = st.number_input(
+        "Stress Level", 0.0, 10.0, 5.0
+    )
+
+st.divider()
+
+if st.button("🔮 Predict Productivity", use_container_width=True):
 
     input_data = pd.DataFrame({
         "AGE": [age],
@@ -95,6 +114,17 @@ if st.button("Predict Productivity"):
 
     prediction = model.predict(input_data)[0]
 
-    st.success(
-        f"Predicted Productivity Score: {prediction:.2f}"
-    )
+    st.success(f"### 🎯 Predicted Productivity Score: {prediction:.2f}")
+
+    if prediction < 40:
+        level = "Low"
+        suggestion = "Try improving study consistency, sleep, focus, and reducing distractions."
+    elif prediction < 70:
+        level = "Moderate"
+        suggestion = "You have a good base. Improving focus and study habits may increase productivity."
+    else:
+        level = "High"
+        suggestion = "Great productivity level! Continue maintaining your current habits."
+
+    st.info(f"📊 Productivity Level: **{level}**")
+    st.write(f"💡 **Suggestion:** {suggestion}")
